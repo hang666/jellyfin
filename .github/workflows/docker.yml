@@ -4,8 +4,6 @@ name: Build Docker Image
 
 # Controls when the action will run. 
 on:
-  watch:
-    types: started
   # 任意推送都会触发构建
   push:
 # 定时调度
@@ -26,7 +24,6 @@ on:
 jobs:
   buildx:
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
     steps:
       -
         name: Checkout
@@ -61,5 +58,4 @@ jobs:
 # 镜像推送时间
           push: ${{ github.event_name != 'pull_request' }}
 # 给清单打上多个标签
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: hang666/jellyfin:latest
