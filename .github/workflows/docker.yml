@@ -23,7 +23,7 @@ on:
 
 env:
   APP_NAME: jellyfin
-  DOCKERHUB_REPO: hang666/jellyfin
+  DOCKERHUB_REPO: user/jellyfin
 
 jobs:
   buildx:
