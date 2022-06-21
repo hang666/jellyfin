@@ -147,7 +147,7 @@ namespace MediaBrowser.MediaEncoding.Encoder
         }
 
         // When changing this, also change the minimum library versions in _ffmpegMinimumLibraryVersions
-        public static Version MinVersion { get; } = null;
+        public static Version? MinVersion { get; } = null;
 
         public static Version? MaxVersion { get; } = null;
 
