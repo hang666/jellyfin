@@ -56,7 +56,7 @@ RUN mkdir -p $FFMPEG_COMPILE_DIR $FFMPEG_SOURCES $LIBAOM_SOURCES $MPP_SOURCES $F
  && cd ${LIBAOM_SOURCES}/aom_build \
  && PATH="${LIBAOM_BIN}:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${LIBAOM_BUILD}" -DENABLE_SHARED=off -DENABLE_NASM=on ../aom \
  && cd ${LIBAOM_SOURCES}/aom_build \
- && PATH="${LIBAOM_BIN}:$PATH" make -j4 \
+ && PATH="${LIBAOM_BIN}:$PATH" make -j8 \
  && cd ${LIBAOM_SOURCES}/aom_build \
  && make install \
  && chmod 755 ${LIBAOM_BUILD}/aom.pc && cp ${LIBAOM_BUILD}/aom.pc ${PKG_CONFIG_PATH}
@@ -67,7 +67,7 @@ RUN mkdir -p $FFMPEG_COMPILE_DIR $FFMPEG_SOURCES $LIBAOM_SOURCES $MPP_SOURCES $F
  && git pull \
  && cmake -DRKPLATFORM=ON -DHAVE_DRM=ON \
  && cd ${MPP_SOURCES}/mpp \
- && make -j4 \
+ && make -j8 \
  && make install \
  && cd .. \
  && chmod 755 ${MPP_SOURCES}/mpp/rockchip_mpp.pc ${MPP_SOURCES}/mpp/rockchip_vpu.pc && cp ${MPP_SOURCES}/mpp/rockchip_mpp.pc ${MPP_SOURCES}/mpp/rockchip_vpu.pc ${PKG_CONFIG_PATH}
@@ -107,7 +107,7 @@ RUN cd ${FFMPEG_SOURCES}/${ffmpeg_source_dir} && PATH="${FFMPEG_BIN}:$PATH" ./co
   --enable-nonfree
 
 RUN cd ${FFMPEG_SOURCES}/${ffmpeg_source_dir} \
- && PATH="${FFMPEG_BIN}:$PATH" make -j4
+ && PATH="${FFMPEG_BIN}:$PATH" make -j8
 
 RUN cp ${FFMPEG_SOURCES}/${ffmpeg_source_dir}/ffmpeg ${FFMPEG_SOURCES}/${ffmpeg_source_dir}/ffprobe /usr/local/bin \
  && apt-get clean autoclean -y \

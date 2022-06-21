@@ -44,7 +44,9 @@ namespace MediaBrowser.MediaEncoding.Encoder
             "mpeg4_cuvid",
             "vp8_cuvid",
             "vp9_cuvid",
-            "av1_cuvid"
+            "av1_cuvid",
+            "h264_rkmpp",
+            "hevc_rkmpp"
         };
 
         private static readonly string[] _requiredEncoders = new[]
@@ -73,7 +75,9 @@ namespace MediaBrowser.MediaEncoding.Encoder
             "hevc_vaapi",
             "h264_v4l2m2m",
             "h264_videotoolbox",
-            "hevc_videotoolbox"
+            "hevc_videotoolbox",
+            "h264_rkmpp",
+            "hevc_rkmpp"
         };
 
         private static readonly string[] _requiredFilters = new[]
@@ -143,7 +147,7 @@ namespace MediaBrowser.MediaEncoding.Encoder
         }
 
         // When changing this, also change the minimum library versions in _ffmpegMinimumLibraryVersions
-        public static Version MinVersion { get; } = new Version(4, 0);
+        public static Version MinVersion { get; } = null;
 
         public static Version? MaxVersion { get; } = null;
 

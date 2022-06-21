@@ -89,6 +89,7 @@ namespace MediaBrowser.Controller.MediaEncoding
                     { "vaapi",                hwEncoder + "_vaapi" },
                     { "videotoolbox",         hwEncoder + "_videotoolbox" },
                     { "v4l2m2m",              hwEncoder + "_v4l2m2m" },
+                    { "rkmpp",                hwEncoder + "_rkmpp" },
                 };
 
                 if (!string.IsNullOrEmpty(hwType)
@@ -842,6 +843,26 @@ namespace MediaBrowser.Controller.MediaEncoding
                 // no videotoolbox hw filter.
                 args.Append(GetVideoToolboxDeviceArgs(VideotoolboxAlias));
             }
+            
+            if (string.Equals(optHwaccelType, "rkmpp", StringComparison.OrdinalIgnoreCase))
+            {
+                var videoDecoder = GetHardwareVideoDecoder(state, options);
+                var outputVideoCodec = GetVideoEncoder(state, options);
+
+                var hasTextSubs = state.SubtitleStream != null && state.SubtitleStream.IsTextSubtitleStream && state.SubtitleDeliveryMethod == SubtitleDeliveryMethod.Encode;
+                if (!hasTextSubs)
+                {
+                    // While using QSV encoder
+                    if ((outputVideoCodec ?? string.Empty).IndexOf("rkmpp", StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        // While using QSV decoder
+                        if ((videoDecoder ?? string.Empty).IndexOf("rkmpp", StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            args.Append("-drm 1 ");
+                        }
+                    }
+                }
+            }
 
             if (!string.IsNullOrEmpty(vidDecoder))
             {
@@ -1256,6 +1277,10 @@ namespace MediaBrowser.Controller.MediaEncoding
             {
                 args += gopArg;
             }
+            else if (codec.IndexOf("rkmpp", StringComparison.OrdinalIgnoreCase) != -1)
+            {
+                args += " -hls_flags split_by_time" + gopArg;
+            }
             else if (string.Equals(codec, "libx264", StringComparison.OrdinalIgnoreCase)
                      || string.Equals(codec, "libx265", StringComparison.OrdinalIgnoreCase)
                      || string.Equals(codec, "h264_vaapi", StringComparison.OrdinalIgnoreCase)
@@ -1586,6 +1611,15 @@ namespace MediaBrowser.Controller.MediaEncoding
                 profile = "constrained_baseline";
             }
 
+            //rkmpp
+            if (string.Equals(videoEncoder, "h264_rkmpp", StringComparison.OrdinalIgnoreCase)
+                && profile.Contains("high", StringComparison.OrdinalIgnoreCase))
+            {
+                profile = "100";
+            }
+
+
+
             // libx264, h264_qsv and h264_nvenc does not support Constrained Baseline profile, force Baseline in this case.
             if ((string.Equals(videoEncoder, "libx264", StringComparison.OrdinalIgnoreCase)
                  || string.Equals(videoEncoder, "h264_qsv", StringComparison.OrdinalIgnoreCase)
@@ -1663,6 +1697,11 @@ namespace MediaBrowser.Controller.MediaEncoding
                 {
                     param += " -level " + level;
                 }
+            }
+
+            if (!string.Equals(videoEncoder, "h264_rkmpp", StringComparison.OrdinalIgnoreCase))
+            {
+                param += " -pix_fmt yuv420p ";
             }
 
             if (string.Equals(videoEncoder, "libx264", StringComparison.OrdinalIgnoreCase))
@@ -4341,6 +4380,51 @@ namespace MediaBrowser.Controller.MediaEncoding
                 if (string.Equals(options.HardwareAccelerationType, "videotoolbox", StringComparison.OrdinalIgnoreCase))
                 {
                     return GetVideotoolboxVidDecoder(state, options, videoStream, bitDepth);
+                }
+
+                if (string.Equals(options.HardwareAccelerationType, "rkmpp", StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (videoStream.Codec.ToLowerInvariant())
+                    {
+                        case "avc":
+                        case "h264":
+                            if (_mediaEncoder.SupportsDecoder("h264_rkmpp") && options.HardwareDecodingCodecs.Contains("h264", StringComparer.OrdinalIgnoreCase))
+                            {
+                                return " -c:v h264_rkmpp ";
+                            }
+                            else
+                            {
+                                return " -c:v h264 ";
+                            }
+                        case "hevc":
+                        case "h265":
+                            if (_mediaEncoder.SupportsDecoder("hevc_rkmpp") && options.HardwareDecodingCodecs.Contains("hevc", StringComparer.OrdinalIgnoreCase))
+                            {
+                                return " -c:v hevc_rkmpp ";
+                            }
+                            else
+                            {
+                                return " -c:v hevc ";
+                            }
+                        case "vp8":
+                            if (_mediaEncoder.SupportsDecoder("vp8_rkmpp") && options.HardwareDecodingCodecs.Contains("vp8", StringComparer.OrdinalIgnoreCase))
+                            {
+                                return " -c:v vp8_rkmpp ";
+                            }
+                            else
+                            {
+                                return " -c:v vp8 ";
+                            }
+                        case "vp9":
+                            if (_mediaEncoder.SupportsDecoder("vp9_rkmpp") && options.HardwareDecodingCodecs.Contains("vp9", StringComparer.OrdinalIgnoreCase))
+                            {
+                                return " -c:v vp9_rkmpp ";
+                            }
+                            else
+                            {
+                                return " -c:v vp9 ";
+                            }
+                    }
                 }
             }
 
