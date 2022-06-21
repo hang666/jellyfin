@@ -4,6 +4,8 @@ name: Build Docker Image
 
 # Controls when the action will run. 
 on:
+  watch:
+    types: started
   # 任意推送都会触发构建
   push:
 # 定时调度
@@ -24,6 +26,7 @@ on:
 jobs:
   buildx:
     runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
     steps:
       -
         name: Checkout
