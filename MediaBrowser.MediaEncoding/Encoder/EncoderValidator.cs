@@ -187,6 +187,8 @@ namespace MediaBrowser.MediaEncoding.Encoder
             var version = GetFFmpegVersionInternal(versionOutput);
 
             _logger.LogInformation("Found ffmpeg version {Version}", version != null ? version.ToString() : "unknown");
+            
+            return true; //不检查版本
 
             if (version == null)
             {
