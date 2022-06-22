@@ -190,7 +190,7 @@ namespace MediaBrowser.MediaEncoding.Encoder
             
             return true; //不检查版本
 
-            if (version == null)
+            /*if (version == null)
             {
                 if (MaxVersion != null) // Version is unknown
                 {
@@ -221,7 +221,7 @@ namespace MediaBrowser.MediaEncoding.Encoder
                 return false;
             }
 
-            return true;
+            return true;*/
         }
 
         public IEnumerable<string> GetDecoders() => GetCodecs(Codec.Decoder);
