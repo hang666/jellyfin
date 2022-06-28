@@ -10,6 +10,11 @@ ARG JELLYFIN_WEB_VERSION=master
 RUN apk add curl git zlib zlib-dev autoconf g++ make libpng-dev gifsicle alpine-sdk automake libtool make gcc musl-dev nasm python3 \
  && curl -L https://github.com/jellyfin/jellyfin-web/archive/${JELLYFIN_WEB_VERSION}.tar.gz | tar zxf - \
  && cd jellyfin-web-* \
+ && sed -i -e 's/<option value="v4l2m2m">Video4Linux2 (V4L2)<\/option>/<option value="v4l2m2m">Video4Linux2 (V4L2)<\/option>\n\t\t\t\t\t\t<option value="rkmpp">RKMPP<\/option>/g' ./src/controllers/dashboard/encodingsettings.html \
+ && sed -i -e 's/class="chkDecodeCodec" data-codec="h264" data-types="amf,nvenc,qsv,vaapi,videotoolbox,v4l2m2m"/class="chkDecodeCodec" data-codec="h264" data-types="amf,nvenc,qsv,vaapi,videotoolbox,v4l2m2m,rkmpp"/g' ./src/controllers/dashboard/encodingsettings.html \
+ && sed -i -e 's/class="chkDecodeCodec" data-codec="hevc" data-types="amf,nvenc,qsv,vaapi,videotoolbox"/class="chkDecodeCodec" data-codec="hevc" data-types="amf,nvenc,qsv,vaapi,videotoolbox,rkmpp"/g' ./src/controllers/dashboard/encodingsettings.html \
+ && sed -i -e 's/class="chkDecodeCodec" data-codec="vp8" data-types="nvenc,qsv,vaapi,videotoolbox"/class="chkDecodeCodec" data-codec="vp8" data-types="nvenc,qsv,vaapi,videotoolbox,rkmpp"/g' ./src/controllers/dashboard/encodingsettings.html \
+ && sed -i -e 's/class="chkDecodeCodec" data-codec="vp9" data-types="amf,nvenc,qsv,vaapi,videotoolbox"/class="chkDecodeCodec" data-codec="vp9" data-types="amf,nvenc,qsv,vaapi,videotoolbox,rkmpp"/g' ./src/controllers/dashboard/encodingsettings.html \
  && npm ci --no-audit --unsafe-perm \
  && mv dist /dist
 
